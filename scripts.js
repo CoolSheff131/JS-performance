@@ -1,1 +1,103 @@
-(()=>{function a(a,b,c){a.addEventListener(b,c)}function b(){let b=document.querySelector(".main__devices"),e=b.querySelector(".section__tab_active").dataset.id,d=b.querySelector(".section__select"),c=b.querySelector(".section__tabs"),f=b.querySelectorAll(".section__panel"),g=Array.from(c.children).map(a=>a.dataset.id);function h(b){let i=g.indexOf(b),j=g.indexOf(e),a=c.children[i],k=f[i],h=c.children[j],l=f[j];e=b,a.classList.add("section__tab_active"),a.setAttribute("aria-selected","true"),a.setAttribute("tabindex","0"),a.focus({preventScroll:!0}),k.classList.remove("section__panel_hidden"),k.setAttribute("aria-hidden","false"),d.value=b,h.classList.remove("section__tab_active"),h.setAttribute("aria-selected","false"),h.removeAttribute("tabindex"),l.classList.add("section__panel_hidden"),l.setAttribute("aria-hidden","true")}d.addEventListener("input",()=>{h(d.value)}),a(c,"click",a=>{let b=a.target.dataset.id;h(b)}),a(c,"keydown",a=>{if(a.ctrlKey||a.metaKey||a.shiftKey||a.altKey)return;let b=g.indexOf(e);if(37===a.which)--b;else if(39===a.which)++b;else if(36===a.which)b=0;else{if(35!==a.which)return;b=g.length-1}b>=g.length?b=0:b<0&&(b=g.length-1),h(g[b]),a.preventDefault()})}function c(){let a=document.querySelector(".header__menu"),b=a.querySelector(".header__menu-text"),c=!1,d=document.querySelector(".header__links");a.addEventListener("click",()=>{c=!c,a.setAttribute("aria-expanded",c?"true":"false"),b.innerHTML=c?"\u0417\u0430\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E":"\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E",d.classList.toggle("header__links_opened",c),d.classList.add("header__links-toggled")})}document.addEventListener("DOMContentLoaded",()=>{b(),c()})})()
+(() => {
+  function makeTabs() {
+    const node = document.querySelector('.main__devices');
+
+    let selected = node.querySelector('.section__tab_active').dataset.id;
+    const select = node.querySelector('.section__select');
+
+    const tabs = node.querySelector('.section__tabs');
+    const panels = node.querySelectorAll('.section__panel');
+
+    const listIds = Array.from(tabs.children).map((node) => node.dataset.id);
+
+    function selectTab(newId) {
+      const index = listIds.indexOf(newId);
+      const oldIndex = listIds.indexOf(selected);
+
+      const newTab = tabs.children[index];
+      const newPanel = panels[index];
+      const oldTab = tabs.children[oldIndex];
+      const oldPanel = panels[oldIndex];
+
+      selected = newId;
+
+      newTab.classList.add('section__tab_active');
+      newTab.setAttribute('aria-selected', 'true');
+      newTab.setAttribute('tabindex', '0');
+      newTab.focus({
+        preventScroll: true,
+      });
+
+      newPanel.classList.remove('section__panel_hidden');
+      newPanel.setAttribute('aria-hidden', 'false');
+
+      select.value = newId;
+
+      oldTab.classList.remove('section__tab_active');
+      oldTab.setAttribute('aria-selected', 'false');
+      oldTab.removeAttribute('tabindex');
+
+      oldPanel.classList.add('section__panel_hidden');
+      oldPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    select.addEventListener('input', () => {
+      selectTab(select.value);
+    });
+
+    tabs.addEventListener('click', (event) => {
+      const newId = event.target.dataset.id;
+      selectTab(newId);
+    });
+
+    tabs.addEventListener('keydown', (event) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      let index = listIds.indexOf(selected);
+      if (event.which === 37) {
+        // left
+        --index;
+      } else if (event.which === 39) {
+        // right
+        ++index;
+      } else if (event.which === 36) {
+        // home
+        index = 0;
+      } else if (event.which === 35) {
+        // end
+        index = listIds.length - 1;
+      } else {
+        return;
+      }
+
+      if (index >= listIds.length) {
+        index = 0;
+      } else if (index < 0) {
+        index = listIds.length - 1;
+      }
+
+      selectTab(listIds[index]);
+      event.preventDefault();
+    });
+  }
+
+  function makeMenu() {
+    const node = document.querySelector('.header__menu');
+    const menuText = node.querySelector('.header__menu-text');
+    let expanded = false;
+    const links = document.querySelector('.header__links');
+
+    node.addEventListener('click', () => {
+      expanded = !expanded;
+      node.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      menuText.innerHTML = expanded ? 'Закрыть меню' : 'Открыть меню';
+      links.classList.toggle('header__links_opened', expanded);
+      links.classList.add('header__links-toggled');
+    });
+  }
+
+  makeTabs();
+  makeMenu();
+})();
