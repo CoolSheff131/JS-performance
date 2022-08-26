@@ -1,28 +1,30 @@
 (() => {
-  function bind(nodes, event, handler) {
-    Array.from(nodes).forEach((node) => {
-      node.addEventListener(event, handler);
-    });
+  function bind(node, event, handler) {
+    node.addEventListener(event, handler);
   }
 
   function makeTabs() {
     const node = document.querySelector('.main__devices');
+
     let selected = node.querySelector('.section__tab_active').dataset.id;
-    const tabs = node.querySelectorAll('.section__tab');
-    const list = Array.from(tabs).map((node) => node.dataset.id);
     const select = node.querySelector('.section__select');
 
+    const tabs = node.querySelector('.section__tabs');
+    const panels = node.querySelectorAll('.section__panel');
+
+    const list = Array.from(tabs.children).map((node) => node.dataset.id);
+
     function selectTab(newId) {
-      const newTab = node.querySelector(`.section__tab[data-id=${newId}]`);
-      const newPanel = node.querySelector(`.section__panel[data-id=${newId}]`);
-      const oldTab = node.querySelector('.section__tab_active');
-      const oldPanel = node.querySelector('.section__panel:not(.section__panel_hidden)');
+      const index = list.indexOf(newId);
+      const oldIndex = list.indexOf(selected);
+
+      const newTab = tabs.children[index];
+      const newPanel = panels[index];
+      const oldTab = tabs.children[oldIndex];
+      const oldPanel = panels[oldIndex];
 
       selected = newId;
 
-      oldTab.classList.remove('section__tab_active');
-      oldTab.setAttribute('aria-selected', 'false');
-      oldTab.removeAttribute('tabindex');
       newTab.classList.add('section__tab_active');
       newTab.setAttribute('aria-selected', 'true');
       newTab.setAttribute('tabindex', '0');
@@ -30,12 +32,17 @@
         preventScroll: true,
       });
 
-      oldPanel.classList.add('section__panel_hidden');
-      oldPanel.setAttribute('aria-hidden', 'true');
       newPanel.classList.remove('section__panel_hidden');
       newPanel.setAttribute('aria-hidden', 'false');
 
       select.value = newId;
+
+      oldTab.classList.remove('section__tab_active');
+      oldTab.setAttribute('aria-selected', 'false');
+      oldTab.removeAttribute('tabindex');
+
+      oldPanel.classList.add('section__panel_hidden');
+      oldPanel.setAttribute('aria-hidden', 'true');
     }
 
     select.addEventListener('input', () => {
